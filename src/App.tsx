@@ -1,24 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { fetchQuestions, Difficulty } from "./api/opentdb";
 
 function App() {
+  const [questions, setQuestions] = useState([]);
+  useEffect(() => {
+    fetchQuestions(5, Difficulty.HARD).then(q => setQuestions(q.map((el: any) => el.question)));
+  }, []);
+  
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {questions}
     </div>
   );
 }
