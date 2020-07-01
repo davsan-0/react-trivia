@@ -1,18 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { fetchQuestions, Difficulty } from "./api/opentdb";
+import React, { useState, useEffect, useRef } from 'react';
+import { connectToRoom, getQuestion } from './api/websocket';
+import ReconnectingWebSocket from 'reconnecting-websocket';
+import {
+  ThemeProvider,
+  createMuiTheme,
+  responsiveFontSizes,
+  makeStyles,
+  Theme,
+} from '@material-ui/core/styles';
+import { green, teal, red, indigo } from '@material-ui/core/colors';
+import { Route, Redirect } from 'react-router-dom';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Header from './common/header/Header';
+import QuestionPage from './QuestionPage/QuestionPage';
+import { useSelector, useDispatch } from 'react-redux';
+
+let theme = createMuiTheme({
+  palette: {
+    primary: indigo,
+    secondary: {
+      main: '#ab47bc',
+    },
+    type: 'dark',
+  },
+});
 
 function App() {
   const [questions, setQuestions] = useState([]);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    fetchQuestions(5, Difficulty.HARD).then(q => setQuestions(q.map((el: any) => el.question)));
+    connectToRoom('EEE', dispatch).then(() => getQuestion());
   }, []);
-  
+
   return (
-    <div className="App">
-      {questions}
-    </div>
+    <ThemeProvider theme={theme}>
+      {/*<Header title="Trivia" /> */}
+      <CssBaseline />
+      <QuestionPage />
+    </ThemeProvider>
   );
 }
 
